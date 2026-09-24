@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="See how changing a criterion's weight changes a decision. A local, open-source sensitivity workbench."
+    />
+    <title>Weight Shift — See the trade-off</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  </head>
+  <body>
+    <a class="skip" href="#workbench">Skip to workbench</a>
+    <header>
+      <a class="brand" href="./"
+        ><span class="mark" aria-hidden="true">W/</span> Weight Shift</a
+      >
+      <div class="header-links">
+        <span class="privacy">Local computation · No account</span
+        ><a href="https://github.com/Christiansada/weight-shift">Source ↗</a>
+      </div>
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">A DECISION SENSITIVITY WORKBENCH</p>
+          <h1>A strong choice.<br /><em>Or a fragile preference?</em></h1>
+          <p class="lede">
+            Move one weight. See the trade-off. Find out which options lead as
+            your priorities change.
+          </p>
+        </div>
+        <aside class="intro-note">
+          <span class="note-number">01 → 100</span>
+          <p>
+            Explore the full weight range, with calculated crossings between
+            options.
+          </p>
+          <span class="tag">Synthetic example included</span>
+        </aside>
+      </section>
+      <section id="workbench" class="panel setup" aria-labelledby="setup-title">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">01 / DEFINE THE DECISION</p>
+            <h2 id="setup-title">Scores & priorities</h2>
+          </div>
+          <button id="reset" type="button" class="secondary">
+            Reset synthetic example
+          </button>
+        </div>
+        <p class="hint">
+          Use comparable preference scores from 0 to 100. Higher is always
+          better, including affordability. Weights express the value of a full
+          0–100 improvement; they are normalized automatically.
+        </p>
+        <form id="scenario-form" novalidate>
+          <label class="title-label"
+            >Decision title<input id="title" maxlength="60" required
+          /></label>
+          <div id="criteria" class="criteria"></div>
+          <div
+            class="table-wrap"
+            role="region"
+            aria-label="Editable option scores"
+            tabindex="0"
+          >
+            <table>
+              <caption>
+                Option scores · all values are preferences, not raw measurements
+              </caption>
+              <thead id="matrix-head"></thead>
+              <tbody id="matrix-body"></tbody>
+            </table>
+          </div>
+          <div class="actions">
+            <button type="submit">Apply scores & weights</button
+            ><span id="data-note" class="muted"
+              >Illustrative venue scores. No real venue data.</span
+            >
+          </div>
+        </form>
+        <details class="import">
+          <summary>Use your own scenario · JSON import</summary>
+          <p>
+            2–8 options, 2–6 criteria; weights 0–1000. Edit the example
+            structure below. Data stays in this tab. Imported labels are
+            rendered as text.
+          </p>
+          <label
+            >Scenario JSON<textarea
+              id="json-input"
+              rows="8"
+              spellcheck="false"
+              maxlength="65536"
+            ></textarea></label
+          ><button id="import" class="secondary" type="button">
+            Import scenario
+          </button>
+        </details>
+      </section>
+      <p id="status" role="status" class="status"></p>
+      <p id="error" role="alert" class="error" hidden></p>
+      <section id="results" aria-label="Decision analysis">
+        <div class="results-head">
+          <div>
+            <p class="eyebrow">02 / CHALLENGE THE PREFERENCE</p>
+            <h2 id="decision-name"></h2>
+          </div>
+          <button id="export" class="secondary" type="button">
+            Export analysis JSON
+          </button>
+        </div>
+        <div class="analysis-grid">
+          <aside class="panel controls">
+            <label>Criterion to vary<select id="criterion"></select></label
+            ><label class="range-label" for="share"
+              >Explored weight <output id="share-value">40%</output></label
+            ><input
+              id="share"
+              type="range"
+              min="0"
+              max="100"
+              step="0.1"
+              value="40"
+            />
+            <div class="range-ends"><span>0%</span><span>100%</span></div>
+            <button id="baseline" class="secondary" type="button">
+              Return to baseline weight
+            </button>
+            <p id="remainder" class="hint"></p>
+            <div class="leader-card">
+              <p class="eyebrow">LEADING AT THIS WEIGHT</p>
+              <h3 id="winner"></h3>
+              <p id="winner-score"></p>
+            </div>
+            <p class="hint">
+              A leader is the highest weighted score, not a recommendation. Ties
+              within 0.00000001 score points are retained.
+            </p>
+          </aside>
+          <div class="panel chart-panel">
+            <div class="chart-heading">
+              <h3>Where preferences cross</h3>
+              <span>Weighted score / 100</span>
+            </div>
+            <div id="chart"></div>
+            <div id="legend" class="legend"></div>
+            <p class="hint">
+              Lines show the continuous calculation. The vertical marker is your
+              explored weight. Full values and boundary ties are available
+              below.
+            </p>
+          </div>
+        </div>
+        <div class="panel ranking">
+          <div class="section-head">
+            <h3>Compare at a glance</h3>
+            <span class="tag" id="weight-summary"></span>
+          </div>
+          <div
+            class="table-wrap"
+            role="region"
+            aria-label="Score comparison"
+            tabindex="0"
+          >
+            <table>
+              <caption>
+                Baseline and explored scores; sorted by explored score
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Option</th>
+                  <th scope="col">Baseline</th>
+                  <th scope="col">Explored</th>
+                  <th scope="col">Change</th>
+                </tr>
+              </thead>
+              <tbody id="ranking"></tbody>
+            </table>
+          </div>
+        </div>
+        <details class="panel audit">
+          <summary>Inspect intervals & boundary ties</summary>
+          <p>
+            Each open interval lies between two calculated pairwise crossings.
+            Boundaries are listed separately. A crossing between lower-scoring
+            options can split an interval without changing its leader. Displayed
+            percentages are rounded; the export retains full precision.
+          </p>
+          <div class="audit-grid">
+            <div>
+              <h3>Open intervals</h3>
+              <ul id="intervals"></ul>
+            </div>
+            <div>
+              <h3>Boundary leaders</h3>
+              <ul id="boundaries"></ul>
+            </div>
+          </div>
+        </details>
+      </section>
+      <section class="method">
+        <h2>The assumptions matter.</h2>
+        <div>
+          <p>
+            This is an additive preference model. Scores must share a meaningful
+            0–100 value scale. A weak score can be offset by a strong score
+            elsewhere; mandatory requirements should be screened separately.
+          </p>
+          <p>
+            Only one weight varies at a time. Remaining weights keep their
+            relative proportions. This does not measure uncertainty, prove an
+            objectively best choice, or handle interactions between criteria.
+          </p>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <span>Weight Shift · Open source under MIT</span
+      ><span>No analytics. No uploads. Refreshing clears your edits.</span
+      ><a
+        href="https://github.com/Christiansada/weight-shift/blob/main/docs/method.md"
+        >Method & limitations ↗</a
+      >
+    </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

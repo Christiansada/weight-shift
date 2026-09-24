@@ -1,0 +1,35 @@
+{
+  "title": "A venue for a community workshop",
+  "criteria": [
+    {
+      "name": "Accessibility",
+      "weight": 40
+    },
+    {
+      "name": "Facilities",
+      "weight": 35
+    },
+    {
+      "name": "Affordability",
+      "weight": 25
+    }
+  ],
+  "options": [
+    {
+      "name": "Library room",
+      "scores": [90, 65, 85]
+    },
+    {
+      "name": "Studio space",
+      "scores": [60, 95, 55]
+    },
+    {
+      "name": "Community hall",
+      "scores": [75, 75, 95]
+    },
+    {
+      "name": "Garden pavilion",
+      "scores": [50, 55, 90]
+    }
+  ]
+}
